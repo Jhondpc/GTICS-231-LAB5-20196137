@@ -1,6 +1,7 @@
 package com.example.gtics231lab520196137.repository;
 
 import com.example.gtics231lab520196137.dto.EmployeeDto;
+import com.example.gtics231lab520196137.dto.SalarioDto;
 import com.example.gtics231lab520196137.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,4 +29,11 @@ public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
     @Modifying
     @Query(nativeQuery = true, value = "INSERT INTO `hr`.`employees` (`first_name`, `last_name`, `email`, `password`, `hire_date`, `job_id`, `salary`, `manager_id`, `department_id`) VALUES (?1, ?2, ?3, ?4, NOW(), ?5, ?6, ?7, ?8)")
     void guardarEmpleado(String nombre, String apellido, String email, String password, String jobId, float salary, int managerId, int departmentId);
+
+    @Query(nativeQuery = true, value = "select j.job_title as puesto, j.max_salary as salarioMaximo, j.min_salary as salarioMinimo, SUM(e.salary) as salarioTotal, AVG(e.salary) as salarioPromedio\n" +
+            "from jobs j\n" +
+            "inner join employees e on (j.job_id=e.job_id)\n" +
+            "group by e.job_id")
+    List<SalarioDto> listarSalarios();
 }
+
